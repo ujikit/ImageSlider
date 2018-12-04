@@ -1,0 +1,197 @@
+
+<%- include global/header %>
+<style media="screen">
+/* Container needed to position the button. Adjust the width as needed */
+.no-photo {
+position: relative;
+}
+
+/* Style the button and place it in the middle of the container/image */
+.no-photo .btn {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+-ms-transform: translate(-50%, -50%);
+background-color: #209cee;
+color: white;
+font-size: 16px;
+padding: 12px 24px;
+border: none;
+cursor: pointer;
+border-radius: 5px;
+}
+
+.no-photo .btn:hover {
+background-color: #3daef9;
+}
+</style>
+<body>
+  <section style="margin-top:15px">
+    <div class="container">
+      <div class="columns is-desktop">
+        <div class="column" style="background:white">
+          <div class="section">
+            <!-- button add -->
+            <div class="columns">
+              <div class="column">
+                <div class="level-right">
+                  <div class="level-item">
+                      <a class="button is-info"><span class="icon is-small"><i class="fas fa-save"></i></span>&nbsp Save</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="columns">
+              <div class="column">
+                <div class="level-left">
+                  <div class="level-item">
+                    <div class="field">
+                      <div class="control">
+                        <input class="input is-large" type="text" placeholder="Input album name.." name="" value="">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="column">
+                <div class="level-right">
+                  <div class="level-item">
+                    <button class="button is-default" type="button" name="button"><i class="fas fa-check"></i>&nbsp Select All Photos</button>
+                    <!-- <label class="checkbox"><input type="checkbox">&nbsp Mark All Photos</label> -->
+                  </div>
+                  <div class="level-item">
+                    <div class="field">
+                      <div class="control">
+                        <div class="field has-addons">
+                          <div class="control">
+                            <input class="input" type="text" placeholder="Seconds.." style="width:70px;">
+                          </div>
+                          <div class="control">
+                            <a class="button is-info"><i class="fas fa-clock"></i>&nbsp Timer</a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- ./button add -->
+            <div class="columns" style="margin-top:15px">
+              <div class="column is-3" style="background:#f5f5f5">
+                <div  class="has-text-centered">
+                  <div class="no-photo">
+                    <img src="no_photo.png" alt="Snow">
+                    <button class="btn"><span class="icon is-small"><i class="fas fa-plus"></i></span></button>
+                  </div>
+                  <!-- <figure class="image is-480x360">
+                    <img src="https://bulma.io/images/placeholders/256x256.png">
+                    <img src="no-photo.png">
+                  </figure> -->
+                  <br>
+                  <div class="columns" style="margin-top:-30px;">
+                    <div class="column is-8">
+                      <span class="level-left is-size-7">Photo Name : </span>
+                      <input class="input" type="text" placeholder="Input Photo Name.." name="" value="" disabled>
+                    </div>
+                    <div class="column is-4">
+                      <span class="level-left is-size-7">Timer : </span>
+                      <input class="input" type="text" placeholder="Time.." name="" value="" disabled>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <div class="column is-3" style="background:#f5f5f5">
+                <div  class="has-text-centered">
+                  <figure class="image is-480x360">
+                    <img src="https://bulma.io/images/placeholders/256x256.png">
+                  </figure>
+                  <br>
+                  <div class="columns" style="margin-top:-30px;">
+                    <div class="column is-8">
+                      <span class="level-left is-size-7">Photo Name : </span>
+                      <input class="input" type="text" placeholder="Input Photo Name.." name="" value="">
+                    </div>
+                    <div class="column is-4">
+                      <span class="level-left is-size-7">Timer : </span>
+                      <input class="input" type="text" placeholder="Time.." name="" value="">
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal is-active">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Add Photos</p>
+          <button class="delete" aria-label="close"></button>
+        </header>
+        <form id="uploadForm" enctype="multipart/form-data" action="/api/photo" method="post">
+          <section class="modal-card-body">
+              <div class="file has-name is-fullwidth">
+                <label class="file-label">
+                  <input class="file-input" type="file" name="userPhoto" multiple>
+                  <span class="file-cta">
+                    <span class="file-icon">
+                      <i class="fas fa-upload"></i>
+                    </span>
+                    <span class="file-label">
+                      Choose a image…
+                    </span>
+                  </span>
+                  <span class="file-name">
+                    Screen Shot 2017-07-29 at 15.54.25.png
+                  </span>
+                </label>
+              </div>
+          </section>
+          <footer class="modal-card-foot">
+            <input class="button is-success" type="submit" value="Save" name="submit">
+            <button class="button">Cancel</button>
+          </footer>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <%- include global/bundle_js %>
+  <script type="text/javascript">
+    $(document).ready(function(){
+      $('#uploadForm').submit(function() {
+        $("#status").empty().text("File is uploading...");
+          $(this).ajaxSubmit({
+            error: function(xhr) {
+              status('Error: ' + xhr.status);
+            },
+            success: function(response) {
+              // console.log(response)
+              // $("#status").empty().text(response);
+              alert(response)
+            }
+          });
+        return false;
+      });
+      // $("#button-upload-photo").on('click', function (e) {
+      //   e.preventDefault()
+      //   $.ajax({
+      //     type: "post",
+      //     url: "/add_album/upload_photo",
+      //     data: $("#form-upload-photo").serialize(),
+      //     success: function(data){
+      //       alert(data)
+      //     }
+      //   });
+      // })
+    })
+  </script>
+</body>
+</html>
