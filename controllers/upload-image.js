@@ -15,11 +15,9 @@ const multer = require('multer')
         const mimetype = file.originalname.match(filetypes)
         // count.push(req.files.length)
         if (mimetype) {
-          console.log("berhasil");
           return cb(null, true)
         }
         else {
-          console.log("gagal");
           return cb(null, false)
         }
       }
