@@ -26,18 +26,20 @@ module.exports = (app, bodyParser) => {
     let album_name = Object.keys(req.body)[0]
     let countObj = JSON.parse(fs.readFileSync('./views/images-gallery/images-gallery.json'))
 
-      var countObjPlus = countObj.image_gallery.length+1
-    let folder = `./views/images-gallery/${countObjPlus}. ${album_name}`
+    var countObjPlus = countObj.image_gallery.length+1
+    let folder = `./views/images-gallery/${album_name}`
     fs.mkdirSync(`${folder}`)
     db.get('image_gallery')
-    .push({number: countObjPlus, album_name:`${album_name}`, file_name:`${countObjPlus}. ${album_name}`})
+    .push({number: countObjPlus, album_name:`${album_name}`})
     .write()
 
   })
   app.post('/add_album/upload_photo',function(req,res){
-    upload(req,res,function(err) {
-      console.log(req.body);
-      res.end()
+    upload(req,res, function(err) {
+      if (err) return err;
+      // console.log(req.files)
+      // console.log(req.body)
+      return req.files
     });
   });
 

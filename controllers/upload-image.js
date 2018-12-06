@@ -4,10 +4,12 @@ const multer = require('multer')
     // multer function
       const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-          cb(null, './views/images-gallery');
+          let folder_album_name = req.body.input_number_album
+          cb(null, `./views/images-gallery/${folder_album_name}`);
         },
         filename: function (req, file, cb) {
-          cb(null, file.fieldname + '-' + Date.now());
+          // cb(null, file.fieldname + '-' + Date.now());
+          cb(null, file.originalname);
         }
       });
       function checkFileType (req, file, cb) {

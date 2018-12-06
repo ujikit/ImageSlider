@@ -47,7 +47,7 @@ background-color: #3daef9;
                 <div class="level-left">
                   <div class="level-item">
                     <div class="field">
-                      <div class="control">
+                      <div id="control" class="control">
                         <input id="input-album-name" class="input is-large" type="text" placeholder="Input album name.." name="input_name">
                       </div>
                     </div>
@@ -78,29 +78,29 @@ background-color: #3daef9;
               </div>
             </div>
             <!-- ./button add -->
-            <!-- setting panel -->
-            <div class="columns" style="margin-top:15px">
-              <div class="column is-3" style="background:#f5f5f5">
-                <div  class="has-text-centered">
-                  <div class="no-photo">
-                    <img src="no_photo.png" alt="Snow">
-                    <button id="button-blank-album" class="btn button" disabled><span class="icon is-small"><i class="fas fa-plus"></i></span></button>
-                  </div>
-                  <br>
-                  <div class="columns" style="margin-top:-30px;">
-                    <div class="column is-8">
-                      <span class="level-left is-size-7">Photo Name : </span>
-                      <input class="input" type="text" placeholder="Input Photo Name.." name="" value="" disabled>
+            <div id="image-preview">
+              <div class="columns" style="margin-top:15px">
+                <div class="column is-3" style="background:#f5f5f5">
+                  <div  class="has-text-centered">
+                    <div class="no-photo">
+                      <img src="no_photo.png" alt="Snow">
+                      <button id="button-blank-album" class="btn button" disabled><span class="icon is-small"><i class="fas fa-plus" style="margin-top:-9.5px"></i></span></button>
                     </div>
-                    <div class="column is-4">
-                      <span class="level-left is-size-7">Timer : </span>
-                      <input class="input" type="text" placeholder="Time.." name="" value="" disabled>
+                    <br>
+                    <div class="columns" style="margin-top:-30px;">
+                      <div class="column is-8">
+                        <span class="level-left is-size-7">Photo Name : </span>
+                        <input class="input" type="text" placeholder="Input Photo Name.." name="" value="" disabled>
+                      </div>
+                      <div class="column is-4">
+                        <span class="level-left is-size-7">Timer : </span>
+                        <input class="input" type="text" placeholder="Time.." name="" value="" disabled>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- ./setting panel -->
           </div>
         </div>
       </div>
@@ -117,6 +117,7 @@ background-color: #3daef9;
         </header>
         <form id="uploadForm" enctype="multipart/form-data" method="post" action="/add_album/upload_photo">
           <section class="modal-card-body">
+            <input id="input-number-album" class="input" type="text" name="input_number_album"><br>
               <div class="file has-name is-fullwidth">
                 <label class="file-label">
                   <input class="file-input" type="file" name="userPhoto" multiple>
@@ -135,7 +136,7 @@ background-color: #3daef9;
               </div>
           </section>
           <footer class="modal-card-foot">
-            <input id="button" class="button is-success" type="submit" value="Save" name="submit">
+            <input id="button-submit-photo" class="button is-success" type="submit" value="Save" name="button-submit-photo">
           </footer>
         </form>
       </div>
@@ -146,22 +147,15 @@ background-color: #3daef9;
   <%- include global/bundle_js %>
   <script type="text/javascript">
     $(document).ready(function(){
-
+      // $("#control").prepend(`<div id='asd' class="notification is-danger">Album name is required.. <button class="delete"></button></div>`)
+      $("#control").prepend(`<span id='asd' class="tag is-danger is-small" style='margin-bottom:10px'>Album name is required.. </span>`)
       var countString = $("#input-album-name").val()
       if (countString == 0) {
         // alert(`Album name required..`)
       }
 
-      // button-blank-album -> modal-add-photo
-      $("#button-blank-album").click(function(){
-        $("#modal-add-photo").addClass("is-active")
-      })
-      $("#button-close-add-photo").click(function(){
-        $("#modal-add-photo").removeClass("is-active")
-      })
-
-
       $("#input-album-name").keypress(function(e) {
+        $("#asd").delay(4000).fadeOut("slow");
         if(e.which == 13) {
           e.preventDefault();
           $.ajax({
@@ -185,6 +179,33 @@ background-color: #3daef9;
           }
         }
       });
+
+      // Action DOM
+      // button-blank-album -> modal-add-photo
+      $("#button-blank-album").click(function(){
+        $("#modal-add-photo").addClass("is-active")
+        $("#input-number-album").val($("#input-album-name").val())
+      })
+      $("#button-close-add-photo").click(function(){
+        $("#modal-add-photo").removeClass("is-active")
+      })
+      $("#uploadForm").on('submit', function(e){
+        e.preventDefault();
+        $("#modal-add-photo").removeClass("is-active")
+        var formData = new FormData(this);
+        $.ajax({
+          type:$(this).attr('method'),
+          url: $(this).attr('action'),
+          data:formData,
+          dataType: 'json',
+          contentType: false,
+          processData: false,
+          complete: function(data){
+            alert(JSON.stringify(data));
+          }
+        });
+      })
+
 
       });
   </script>
