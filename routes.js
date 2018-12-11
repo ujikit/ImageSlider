@@ -37,9 +37,13 @@ module.exports = (app, bodyParser) => {
   app.post('/add_album/upload_photo',function(req,res){
     upload(req,res, function(err) {
       if (err) return err;
-      // console.log(req.files)
+      let dataPhoto = []
+      for (var i = 0; i < req.files.length; i++) {
+        dataPhoto.push(req.files[i].originalname)
+      }
+      console.log(dataPhoto);
       // console.log(req.body)
-      return req.files
+      res.send(dataPhoto)
     });
   });
 

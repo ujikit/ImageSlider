@@ -13,8 +13,8 @@ const multer = require('multer')
         }
       });
       function checkFileType (req, file, cb) {
-        const filetypes = /jpeg|jpg|png/;
-        const mimetype = file.originalname.match(filetypes)
+        let filetypes = /jpeg|jpg|png/;
+        let mimetype = file.originalname.match(filetypes)
         // count.push(req.files.length)
         if (mimetype) {
           return cb(null, true)

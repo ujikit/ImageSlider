@@ -2,6 +2,7 @@ const multer = require('multer')
 const bodyParser = require('body-parser')
 const express = require('express')
 const app = express()
+const cors = require('cors')
 
 require('./routes.js')(app, bodyParser);
 app.use(function(req,res,next){
@@ -18,6 +19,7 @@ app.use(function(req,res,next){
     }
 });
 app.set('view engine', 'ejs');
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/assets'));

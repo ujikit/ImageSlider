@@ -108,6 +108,7 @@ background-color: #3daef9;
     </div>
 
     <!-- Modal -->
+    <!-- 1. Upload Image -->
     <div id="modal-add-photo" class="modal">
       <div class="modal-background"></div>
       <div class="modal-card">
@@ -120,7 +121,7 @@ background-color: #3daef9;
             <input id="input-number-album" class="input" type="text" name="input_number_album"><br>
               <div class="file has-name is-fullwidth">
                 <label class="file-label">
-                  <input class="file-input" type="file" name="userPhoto" multiple>
+                  <input id="input-photo" class="file-input" type="file" name="input_photo" multiple>
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
@@ -129,9 +130,7 @@ background-color: #3daef9;
                       Choose a image…
                     </span>
                   </span>
-                  <span class="file-name">
-                    Screen Shot 2017-07-29 at 15.54.25.png
-                  </span>
+                  <span class="file-name"></span>
                 </label>
               </div>
           </section>
@@ -139,6 +138,23 @@ background-color: #3daef9;
             <input id="button-submit-photo" class="button is-success" type="submit" value="Save" name="button-submit-photo">
           </footer>
         </form>
+      </div>
+    </div>
+
+    <!-- 2. Rejected Image -->
+    <div id="modal-rejected-image" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Daftar File yang Tertolak</p>
+          <button id="button-close-rejected-image" class="delete" aria-label="close"></button>
+        </header>
+        <section id="body-rejected-image" class="modal-card-body">
+          <div class="columns notification is-danger is-centered">Pastikan File Berformat : JPG/JPEG/PNG</div>
+        </section>
+        <footer class="modal-card-foot">
+          <!-- <button id="button-close-rejected-image" class="button is-success">Okey</button> -->
+        </footer>
       </div>
     </div>
     <!-- ./modal -->
@@ -180,15 +196,21 @@ background-color: #3daef9;
         }
       });
 
-      // Action DOM
+      // [++] Action DOM
+      // [0] add button action
       // button-blank-album -> modal-add-photo
       $("#button-blank-album").click(function(){
         $("#modal-add-photo").addClass("is-active")
         $("#input-number-album").val($("#input-album-name").val())
       })
+      // [1] close button action
       $("#button-close-add-photo").click(function(){
         $("#modal-add-photo").removeClass("is-active")
       })
+      $("#button-close-rejected-image").click(function(){
+        $("#modal-rejected-image").removeClass("is-active")
+      })
+
       $("#uploadForm").on('submit', function(e){
         e.preventDefault();
         $("#modal-add-photo").removeClass("is-active")
@@ -201,7 +223,21 @@ background-color: #3daef9;
           contentType: false,
           processData: false,
           complete: function(data){
-            alert(JSON.stringify(data));
+            let x = document.getElementById("input-photo");
+            let files = x.files;
+            let filetypes = /jpeg|jpg|png/;
+            var rejectFile = []
+            for (var i = 0; i < files.length; i++) {
+              let no = i+1
+              let mimetype = files[i].name.match(filetypes)
+              if (mimetype == null) {
+                rejectFile.push(`${files[i].name}<br>`)
+                $("#body-rejected-image").append(`${no}. ${files[i].name}<br>`)
+              }
+            }
+            if (rejectFile.length > 0) {
+              $("#modal-rejected-image").addClass("is-active")
+            }
           }
         });
       })
