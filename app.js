@@ -22,9 +22,9 @@ app.set('view engine', 'ejs');
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname + '/assets'));
-app.use(express.static(__dirname + '/views/images-gallery'));
-app.use(express.static(__dirname + '/node_modules'));
+app.use(express.static('views/images-gallery')); //untuk fetch gambar otomatis ke web saat append
+app.use(express.static(__dirname + '/assets')); // untuk gambar awal saat belum ada foto yang diupload
+app.use(express.static(__dirname + '/node_modules')); // untuk akses node modules
 
 var listener = app.listen(8888, function(){
   console.log('Listening on port ' + listener.address().port); //Listening on port 8888

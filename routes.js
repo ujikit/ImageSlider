@@ -1,8 +1,8 @@
 const fs = require('fs')
 // file :
 // upload image
-const uploadImages = require('./controllers/upload-image.js')
-const upload = uploadImages.uploadImage()
+const createAlbum = require('./controllers/create-album.js')
+const uploadAlbumPhoto = createAlbum.uploadPhoto()
 // ./file
 // lowdb
 const lowdb = require('lowdb')
@@ -35,15 +35,15 @@ module.exports = (app, bodyParser) => {
 
   })
   app.post('/add_album/upload_photo',function(req,res){
-    upload(req,res, function(err) {
+    uploadAlbumPhoto(req,res, function(err) {
       if (err) return err;
-      let dataPhoto = []
-      for (var i = 0; i < req.files.length; i++) {
-        dataPhoto.push(req.files[i].originalname)
-      }
-      console.log(dataPhoto);
-      // console.log(req.body)
-      res.send(dataPhoto)
+      let photo_name = fs.readdirSync(`./views/images-gallery/${req.body.input_album_name2}`)
+      let data_all = []
+      data_all.push({
+        "album_name" : req.body.input_album_name2,
+        "photo_name" : photo_name
+      })
+      res.send(data_all);
     });
   });
 

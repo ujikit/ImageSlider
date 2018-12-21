@@ -1,10 +1,10 @@
 const multer = require('multer')
 
-  const uploadImage = () => {
+  const uploadPhoto = () => {
     // multer function
       const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-          let folder_album_name = req.body.input_number_album
+          let folder_album_name = req.body.input_album_name2
           cb(null, `./views/images-gallery/${folder_album_name}`);
         },
         filename: function (req, file, cb) {
@@ -33,5 +33,5 @@ const multer = require('multer')
   }
 
   module.exports = {
-    uploadImage
+    uploadPhoto
   }

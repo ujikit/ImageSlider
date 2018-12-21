@@ -25,6 +25,15 @@ border-radius: 5px;
 .no-photo .btn:hover {
 background-color: #3daef9;
 }
+
+.thumb {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    margin: 5px;
+    background-position: center center;
+    background-size: cover;
+}
 </style>
 <body>
   <section style="margin-top:15px">
@@ -37,7 +46,7 @@ background-color: #3daef9;
               <div class="column">
                 <div class="level-right">
                   <div class="level-item">
-                      <button id="button-save-album" class="button is-info" disabled><span class="icon is-small"><i class="fas fa-save"></i></span>&nbsp Save</button>
+                      <button id="button-save-album" class="button is-info" disabled><span class="icon is-small"><i class="fas fa-save"></i></span>&nbsp Save Album</button>
                   </div>
                 </div>
               </div>
@@ -45,10 +54,19 @@ background-color: #3daef9;
             <div class="columns">
               <div class="column">
                 <div class="level-left">
-                  <div class="level-item">
-                    <div class="field">
-                      <div id="control" class="control">
-                        <input id="input-album-name" class="input is-large" type="text" placeholder="Input album name.." name="input_name">
+                  <div class="columns">
+                    <div class="column is-8">
+                      <div class="level-item">
+                        <div class="field">
+                          <div id="control" class="control">
+                            <input id="input-album-name1" class="input" type="text" placeholder="Input album name.." name="input_name">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="column is-4">
+                      <div class="level-item">
+                        <button id="button-add-photo" class="button is-info" type="button" name="button" disabled><i class="fas fa-plus"></i>&nbsp Add Photo</button>
                       </div>
                     </div>
                   </div>
@@ -57,11 +75,11 @@ background-color: #3daef9;
               <div class="column">
                 <div class="level-right">
                   <div class="level-item">
-                    <button id="button-select-all-photo" class="button is-default" type="button" name="button" disabled><i class="fas fa-check"></i>&nbsp Select All Photos</button>
-                    <!-- <label class="checkbox"><input type="checkbox">&nbsp Mark All Photos</label> -->
+                    <button id="button-select-all-photo" class="button is-default is-rounded" type="button" name="button" disabled><i class="fas fa-check"></i>&nbsp Select All Photos</button>
                   </div>
                   <div class="level-item">
-                    <div class="field">
+                    <button id="" class="button is-default" type="button" name="button" disabled><i class="fas fa-cog"></i>&nbsp Atur Foto</button>
+                    <!-- <div class="field">
                       <div class="control">
                         <div class="field has-addons">
                           <div class="control">
@@ -72,31 +90,17 @@ background-color: #3daef9;
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
               </div>
             </div>
             <!-- ./button add -->
-            <div id="image-preview">
-              <div class="columns" style="margin-top:15px">
-                <div class="column is-3" style="background:#f5f5f5">
-                  <div  class="has-text-centered">
-                    <div class="no-photo">
-                      <img src="no_photo.png" alt="Snow">
-                      <button id="button-blank-album" class="btn button" disabled><span class="icon is-small"><i class="fas fa-plus" style="margin-top:-9.5px"></i></span></button>
-                    </div>
-                    <br>
-                    <div class="columns" style="margin-top:-30px;">
-                      <div class="column is-8">
-                        <span class="level-left is-size-7">Photo Name : </span>
-                        <input class="input" type="text" placeholder="Input Photo Name.." name="" value="" disabled>
-                      </div>
-                      <div class="column is-4">
-                        <span class="level-left is-size-7">Timer : </span>
-                        <input class="input" type="text" placeholder="Time.." name="" value="" disabled>
-                      </div>
-                    </div>
+            <div id="image-preview" class="columns is-multiline" style="margin-top:15px">
+              <div id="belum-ada-photo" class="column is-12" style="margin-top:40px">
+                <div class="column is-half is-offset-one-quarter">
+                  <div class="notification is-info">
+                    <p class="is-size-5 has-text-weight-bold has-text-centered">Belum Ada Photo</p>
                   </div>
                 </div>
               </div>
@@ -104,7 +108,6 @@ background-color: #3daef9;
           </div>
         </div>
       </div>
-      <hr>
     </div>
 
     <!-- Modal -->
@@ -118,7 +121,7 @@ background-color: #3daef9;
         </header>
         <form id="uploadForm" enctype="multipart/form-data" method="post" action="/add_album/upload_photo">
           <section class="modal-card-body">
-            <input id="input-number-album" class="input" type="text" name="input_number_album"><br>
+            <input id="input-album-name2" class="input" type="hidden" name="input_album_name2"><br>
               <div class="file has-name is-fullwidth">
                 <label class="file-label">
                   <input id="input-photo" class="file-input" type="file" name="input_photo" multiple>
@@ -135,7 +138,7 @@ background-color: #3daef9;
               </div>
           </section>
           <footer class="modal-card-foot">
-            <input id="button-submit-photo" class="button is-success" type="submit" value="Save" name="button-submit-photo">
+            <input id="button-submit-photo" class="button is-success" type="submit" value="Upload" name="button-submit-photo">
           </footer>
         </form>
       </div>
@@ -163,45 +166,40 @@ background-color: #3daef9;
   <%- include global/bundle_js %>
   <script type="text/javascript">
     $(document).ready(function(){
-      // $("#control").prepend(`<div id='asd' class="notification is-danger">Album name is required.. <button class="delete"></button></div>`)
-      $("#control").prepend(`<span id='asd' class="tag is-danger is-small" style='margin-bottom:10px'>Album name is required.. </span>`)
-      var countString = $("#input-album-name").val()
-      if (countString == 0) {
-        // alert(`Album name required..`)
-      }
-
-      $("#input-album-name").keypress(function(e) {
-        $("#asd").delay(4000).fadeOut("slow");
+      alert(`Enter album name..`);
+      $("#input-album-name1").focus();
+      $("#input-album-name1").keypress(function(e) {
         if(e.which == 13) {
           e.preventDefault();
-          $.ajax({
-            type : 'POST',
-            url : '/add_album/input_name',
-            data : $("#input-album-name").val(),
-            success : function(response){
-              alert(response);
-            }
-          })
           var countString = $(this).val()
-          if (countString == 0) {
+          if (countString == 0 || countString == undefined) {
             alert(`Album name required..`)
+            return 0
           }
           else {
             $("#button-select-all-photo").prop("disabled", false);
             $("#input-multi-timer").prop("disabled", false);
             $("#button-multi-timer").prop("disabled", false);
-            $("#button-blank-album").prop("disabled", false);
+            $("#button-add-photo").prop("disabled", false);
             $("#button-save-album").prop("disabled", false);
           }
+          $.ajax({
+            type : 'POST',
+            url : '/add_album/input_name',
+            data : $("#input-album-name1").val(),
+            success : function(response){
+              // alert(response);
+            }
+          })
         }
       });
 
       // [++] Action DOM
       // [0] add button action
-      // button-blank-album -> modal-add-photo
-      $("#button-blank-album").click(function(){
+      // button-add-photo -> modal-add-photo
+      $("#button-add-photo").click(function(){
         $("#modal-add-photo").addClass("is-active")
-        $("#input-number-album").val($("#input-album-name").val())
+        $("#input-album-name2").val($("#input-album-name1").val())
       })
       // [1] close button action
       $("#button-close-add-photo").click(function(){
@@ -228,22 +226,54 @@ background-color: #3daef9;
             let filetypes = /jpeg|jpg|png/;
             var rejectFile = []
             for (var i = 0; i < files.length; i++) {
-              let no = i+1
               let mimetype = files[i].name.match(filetypes)
               if (mimetype == null) {
                 rejectFile.push(`${files[i].name}<br>`)
-                $("#body-rejected-image").append(`${no}. ${files[i].name}<br>`)
               }
             }
-            if (rejectFile.length > 0) {
-              $("#modal-rejected-image").addClass("is-active")
+            for (var i = 0; i < rejectFile.length; i++) {
+              let no = i+1
+              $("#body-rejected-image").append(`${no}. ${rejectFile[i]}`)
+            }
+            // handling modal rejected image
+            if (rejectFile.length > 0) { $("#modal-rejected-image").addClass("is-active") }
+            else {
+              $("#belum-ada-photo").hide()
+            }
+
+            let data_all = JSON.parse(JSON.stringify(data))
+            let path_album = `./views/images-gallery/${JSON.parse(data_all.responseText)[0].album_name}`
+            let photo_name = JSON.parse(data_all.responseText)[0].photo_name
+            for (var i = 0; i < photo_name.length; i++) {
+              $("#image-preview").append(`
+                <div class="column is-3" style="background:#f5f5f5">
+                <div  class="has-text-centered">
+                  <div class="no-photo">
+                    <div class="thumb" style="background-image: url('${JSON.parse(data_all.responseText)[0].album_name}/${photo_name[i]}');" title="Landscape: 800x400"></div>
+                  </div>
+                  <br>
+                  <div class="columns" style="margin-top:-30px;">
+                    <div class="column is-8">
+                      <span class="level-left is-size-7">Photo Name : </span>
+                      <input class="input" type="text" placeholder="Input Photo Name.." name="input-name-sub-photo">
+                    </div>
+                    <div class="column is-4">
+                      <span class="level-left is-size-7">Timer : </span>
+                      <input class="input" type="text" placeholder="Time.." name="input-time-sub-photo">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              `)
             }
           }
         });
       })
-
-
-      });
+      // prevent close tab browset
+      window.onbeforeunload = function() {
+        return 'You have unsaved changes!';
+      }
+    });
   </script>
 </body>
 </html>
