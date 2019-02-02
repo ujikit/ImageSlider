@@ -1,3 +1,39 @@
 <link rel="stylesheet" href="bulma/css/bulma.min.css">
 <link rel="stylesheet" href="@fortawesome/fontawesome-free/css/all.min.css">
 <link rel="stylesheet" href="@fortawesome/fontawesome-free/css/fontawesome.min.css">
+
+<style media="screen">
+/* Container needed to position the button. Adjust the width as needed */
+.no-photo {
+position: relative;
+}
+
+/* Style the button and place it in the middle of the container/image */
+.no-photo .btn {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+-ms-transform: translate(-50%, -50%);
+background-color: #209cee;
+color: white;
+font-size: 16px;
+padding: 12px 24px;
+border: none;
+/* cursor: pointer; */
+border-radius: 5px;
+}
+
+.no-photo .btn:hover {
+background-color: #3daef9;
+}
+
+.thumb {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    margin: 5px;
+    background-position: center center;
+    background-size: cover;
+}
+</style>

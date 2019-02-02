@@ -1,40 +1,4 @@
-
 <%- include global/header %>
-<style media="screen">
-/* Container needed to position the button. Adjust the width as needed */
-.no-photo {
-position: relative;
-}
-
-/* Style the button and place it in the middle of the container/image */
-.no-photo .btn {
-position: absolute;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
--ms-transform: translate(-50%, -50%);
-background-color: #209cee;
-color: white;
-font-size: 16px;
-padding: 12px 24px;
-border: none;
-/* cursor: pointer; */
-border-radius: 5px;
-}
-
-.no-photo .btn:hover {
-background-color: #3daef9;
-}
-
-.thumb {
-    display: inline-block;
-    width: 200px;
-    height: 200px;
-    margin: 5px;
-    background-position: center center;
-    background-size: cover;
-}
-</style>
 <body>
   <section style="margin-top:15px">
     <div class="container">
@@ -46,7 +10,7 @@ background-color: #3daef9;
               <div class="column">
                 <div class="level-right">
                   <div class="level-item">
-                      <button id="button-save-album" class="button is-info" disabled><span class="icon is-small"><i class="fas fa-save"></i></span>&nbsp Save Album</button>
+                    <a id="button-save-album" class="button is-info"><span class="icon is-small"><i class="fas fa-save"></i></span>&nbsp Save Album</a>
                   </div>
                 </div>
               </div>
@@ -75,7 +39,7 @@ background-color: #3daef9;
               <div class="column">
                 <div class="level-right">
                   <div class="level-item">
-                    <button id="button-select-all-photo" class="button is-default is-rounded" type="button" name="button" disabled><i class="fas fa-check"></i>&nbsp Select All Photos</button>
+                    <button id="button-select-all-photo" class="button is-default is-rounded" type="button" name="button" disabled><i class="fas fa-check"></i>&nbsp Pilih semua foto</button>
                   </div>
                   <div class="level-item">
                     <button id="" class="button is-default" type="button" name="button" disabled><i class="fas fa-cog"></i>&nbsp Atur Foto</button>
@@ -117,7 +81,7 @@ background-color: #3daef9;
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">Add Photos</p>
-          <button id="button-close-add-photo" class="delete" aria-label="close"></button>
+          <button value="modal-add-photo" class="delete button-cancel" aria-label="close"></button>
         </header>
         <form id="uploadForm" enctype="multipart/form-data" method="post" action="/add_album/upload_photo">
           <section class="modal-card-body">
@@ -143,14 +107,13 @@ background-color: #3daef9;
         </form>
       </div>
     </div>
-
     <!-- 2. Rejected Image -->
     <div id="modal-rejected-image" class="modal">
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">Daftar File yang Tertolak</p>
-          <button id="button-close-rejected-image" class="delete" aria-label="close"></button>
+          <button value="modal-rejected-image" class="delete button-cancel" aria-label="close"></button>
         </header>
         <section id="body-rejected-image" class="modal-card-body">
           <div class="columns notification is-danger is-centered">Pastikan File Berformat : JPG/JPEG/PNG</div>
@@ -160,11 +123,30 @@ background-color: #3daef9;
         </footer>
       </div>
     </div>
+    <!-- 3. Modal confirm delete photo -->
+    <div id="modal-confirm-delete-photo" class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Hapus Foto</p>
+        </header>
+        <section class="modal-card-body">
+          <h2>Apakah kamu ingin menghapus foto dengan nama "<b><span id="name-deleted-photo"></span></b>" ?</h2>
+        </section>
+        <footer class="modal-card-foot">
+          <button id="button-delete-photo2" value="" class="button is-danger">Hapus</button>
+          <button value="modal-confirm-delete-photo" class="button is-info button-cancel">Batal</button>
+        </footer>
+      </div>
+    </div>
     <!-- ./modal -->
   </section>
 
   <%- include global/bundle_js %>
   <script type="text/javascript">
+  // GLobal Variabel
+  var fotoTerhapus = []
+
     $(document).ready(function(){
       alert(`Enter album name..`);
       $("#input-album-name1").focus();
@@ -182,6 +164,7 @@ background-color: #3daef9;
             $("#button-multi-timer").prop("disabled", false);
             $("#button-add-photo").prop("disabled", false);
             $("#button-save-album").prop("disabled", false);
+            $("#input-album-name1").prop("disabled", true);
           }
           $.ajax({
             type : 'POST',
@@ -197,16 +180,9 @@ background-color: #3daef9;
       // [++] Action DOM
       // [0] add button action
       // button-add-photo -> modal-add-photo
-      $("#button-add-photo").click(function(){
+      $("#button-add-photo").on('click', function(){
         $("#modal-add-photo").addClass("is-active")
         $("#input-album-name2").val($("#input-album-name1").val())
-      })
-      // [1] close button action
-      $("#button-close-add-photo").click(function(){
-        $("#modal-add-photo").removeClass("is-active")
-      })
-      $("#button-close-rejected-image").click(function(){
-        $("#modal-rejected-image").removeClass("is-active")
       })
 
       $("#uploadForm").on('submit', function(e){
@@ -243,36 +219,96 @@ background-color: #3daef9;
 
             let data_all = JSON.parse(JSON.stringify(data))
             let path_album = `./views/images-gallery/${JSON.parse(data_all.responseText)[0].album_name}`
-            let photo_name = JSON.parse(data_all.responseText)[0].photo_name
-            for (var i = 0; i < photo_name.length; i++) {
-              $("#image-preview").append(`
-                <div class="column is-3" style="background:#f5f5f5">
-                <div  class="has-text-centered">
-                  <div class="no-photo">
-                    <div class="thumb" style="background-image: url('${JSON.parse(data_all.responseText)[0].album_name}/${photo_name[i]}');" title="Landscape: 800x400"></div>
-                  </div>
-                  <br>
-                  <div class="columns" style="margin-top:-30px;">
-                    <div class="column is-8">
-                      <span class="level-left is-size-7">Photo Name : </span>
-                      <input class="input" type="text" placeholder="Input Photo Name.." name="input-name-sub-photo">
+            let path_album_json_data = `./views/images-gallery/${JSON.parse(data_all.responseText)[0].album_name}/${JSON.parse(data_all.responseText)[0].album_name}.json`
+            let original_file_name = JSON.parse(data_all.responseText)[0].original_file_name
+
+            $("#image-preview").html('')
+            for (var i = 0; i < original_file_name.length; i++) {
+              if (original_file_name[i].slice(-5) !== ".json") {
+                $("#image-preview").append(`
+                  <div id="photo-${i}" class="column is-3" style="background:#f5f5f5">
+                    <div  class="has-text-centered">
+                      <div class="no-photo">
+                        <div class="thumb" style="background-image: url('${JSON.parse(data_all.responseText)[0].album_name}/${original_file_name[i]}');" title="Landscape: 800x400"></div>
+                      </div>
+                      <br>
+                      <div class="columns" style="margin-top:-30px;">
+                        <div class="column is-7">
+                          <span class="level-left is-size-7">Photo Name : </span>
+                          <input type="hidden" value="${original_file_name[i]}" class="input input-original-file-name">
+                          <input id="input-value-${i}" value="${original_file_name[i]}" class="input input-name" type="text" placeholder="Input Photo Name.." name="input-name-sub-photo">
+                        </div>
+                        <div class="column is-3">
+                          <span class="level-left is-size-7">Timer : </span>
+                          <input class="input input-time" type="text" placeholder="Time.." name="input-time-sub-photo">
+                        </div>
+                        <div class="column is-2">
+                          <button class="button is-danger button-delete-photo" value="${i}" type="button" name="button" style="margin-top:18px;"><i class="fas fa-trash"></i></button>
+                        </div>
+                      </div>
                     </div>
-                    <div class="column is-4">
-                      <span class="level-left is-size-7">Timer : </span>
-                      <input class="input" type="text" placeholder="Time.." name="input-time-sub-photo">
-                    </div>
                   </div>
-                </div>
-              </div>
-              `)
+                `)
+              }
             }
+
           }
         });
       })
-      // prevent close tab browset
-      window.onbeforeunload = function() {
-        return 'You have unsaved changes!';
-      }
+
+      $(".button-delete-photo").on("click", function () {
+        $("#name-deleted-photo").html("")
+        var getValButton = $(this).val()
+        alert(getValButton)
+        var fix = $(`#input-value-${getValButton}`).val()
+        $("#modal-confirm-delete-photo").addClass("is-active")
+        $("#button-delete-photo2").val(fix)
+        $("#name-deleted-photo").append(fix)
+      })
+
+      $("#button-delete-photo2").on("click", function () {
+        var getValButton = $(this).val()
+        var fix = $(`#input-value-${getValButton}`).val()
+        fotoTerhapus.push(fix)
+        $(`#modal-confirm-delete-photo`).removeClass("is-active")
+        $(`#photo-${getValButton}`).remove()
+      })
+
+      $(".button-cancel").on("click", function () {
+        var selected = $(this).val()
+        $(`#${selected}`).removeClass("is-active")
+      })
+
+      $("#button-save-album").on("click", function () {
+        var album_name = $("#input-album-name1").val()
+        var array = []; var array0 = []; var array1 = []; var array2 = [];
+
+        $(".input-original-file-name").each(function () {
+          array0.push($(this).val())
+        })
+        $(".input-name").each(function () {
+          array1.push($(this).val())
+        })
+        $(".input-time").each(function () {
+          array2.push($(this).val())
+        })
+        array.push({
+          album_name: album_name,
+          original_file_name: array0,
+          input_name: array1,
+          input_time: array2
+        })
+
+        $.ajax({
+          type : 'POST',
+          url : '/add_album/save_album',
+          data : {data: array},
+          success : function(response){
+
+          }
+        })
+      })
+
     });
   </script>
 </body>
