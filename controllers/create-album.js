@@ -25,13 +25,14 @@ const fs = require('fs')
           dataPhotoDB.get('photo_data[0].photos').push({
             number: countObjCounter,
             photo_name: "",
-            original_file_name: file.originalname
+            original_file_name: file.originalname,
+            time_per_photo: ""
           }).write()
 
         }
       });
       function checkFileType (req, file, cb) {
-        let filetypes = /jpeg|jpg|png/;
+        let filetypes = /jpeg|jpg|png|JPEG|JPG|PNG/; //check image type (case sensitive)
         let mimetype = file.originalname.match(filetypes)
         if (mimetype) { return cb(null, true) }
         else { return cb(null, false) }

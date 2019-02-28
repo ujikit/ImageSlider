@@ -33,6 +33,13 @@
             </div>
             <div id="list-album" class="columns is-multiline" style="margin-top:15px">
               <!-- Appended JQuery Event -->
+              <div id="belum-ada-photo" class="column is-12" style="margin-top:40px">
+                <div class="column is-half is-offset-one-quarter">
+                  <div class="notification is-info">
+                    <p class="is-size-5 has-text-weight-bold has-text-centered">Belum Ada Album Photo</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -48,33 +55,84 @@
         type : 'GET',
         url : '/data/get-first-photo-per-album',
         success : function(response){
-          for (var i = 0; i < Object.keys(response).length; i++) {
-            $("#list-album").append(`
-              <div class="column is-4">
-                <div class="card">
-                  <div class="has-text-centered">
-                    <header class="card-header">
-                      <p class="card-header-title">${response[i].album_name.substr(0, 25)}</p>
-                    </header>
-                    <div class="card-content">
-                      <div class="card-image">
-                      <figure class="image is-1by1">
-                        <img src="./${response[i].album_name}/t2ext4752.png" alt="Placeholder image">
-                      </figure>
+          if (response.length > 0) {
+            $("#list-album").html('')
+            for (var i = 0; i < Object.keys(response).length; i++) {
+              $("#list-album").append(`
+                <div class="column is-4">
+                  <div class="card">
+                    <div class="has-text-centered">
+                      <header class="card-header">
+                        <p class="card-header-title">${response[i].album_name.substr(0, 25)}</p>
+                      </header>
+                      <div class="card-content">
+                        <div class="card-image">
+                        <figure class="image is-1by1">
+                          <img src="${response[i].path_first_photo}" alt="Placeholder image">
+                        </figure>
+                      </div>
+                      </div>
+                      <footer class="card-footer">
+                        <a href="#" class="card-footer-item"><button id="button-play-album" value="${response[i].album_name}" class="button is-success" type="button" name="button"><i class="fas fa-caret-right"></i>&nbsp Play</button></a>
+                        <a href="#" class="card-footer-item"><button id="button-edit-album" class="button is-info" type="button" name="button" disabled><i class="fas fa-edit"></i>&nbsp Edit Photo</button></a>
+                        <a href="#" class="card-footer-item"><button id="button-delete-album" value="${response[i].album_name}" class="button is-danger" type="button" name="button"><i class="fas fa-trash"></i></button></a>
+                      </footer>
                     </div>
-                    </div>
-                    <footer class="card-footer">
-                      <a href="#" class="card-footer-item"><button id="button-add-photo" class="button is-info" type="button" name="button"><i class="fas fa-caret-right"></i>&nbsp Play</button></a>
-                      <a href="#" class="card-footer-item"><button id="button-add-photo" class="button is-info" type="button" name="button"><i class="fas fa-edit"></i>&nbsp Edit Foto</button></a>
-                      <a href="#" class="card-footer-item"><button id="button-add-photo" class="button is-danger" type="button" name="button"><i class="fas fa-trash"></i></button></a>
-                    </footer>
                   </div>
                 </div>
-              </div>
-            `)
+              `)
+            }
           }
         }
       })
+
+      // APPENDED EVENT
+      $(document).on("click", "#button-delete-album", function () {
+        let value = $(this).val()
+        Swal.fire({
+          title: 'Are you sure?',
+          html: `Album "<b>${value}</b>" will be permanently deleted!`,
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete!'
+        }).then((result) => {
+          if (result.value) {
+            $.ajax({
+              type : 'POST',
+              url : '/delete_album',
+              data : {data: value},
+              success : function(response){
+                if (response.status == "success") {
+                  Swal.fire(
+                    'Deleted!',
+                    'Your file has been deleted.',
+                    'success'
+                  )
+                  location.reload();
+                }
+                else {
+                  alert(response.data)
+                }
+              }
+            })
+          }
+        })
+      })
+
+      $(document).on("click", "#button-play-album", function () {
+        let data = $(this).val()
+        $.ajax({
+          type : 'POST',
+          url : '/play_album',
+          data : {data: data},
+          success : function (response){
+            alert(JSON.stringify(response))
+          }
+        })
+      })
+      // ./APPENDED EVENT
 
     })
   </script>

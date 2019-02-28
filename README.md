@@ -1,1 +1,3 @@
 in progress app...
+weakness:
+-designed for without serverside validator
