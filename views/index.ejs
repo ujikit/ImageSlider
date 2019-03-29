@@ -48,6 +48,14 @@
     </div>
   </section>
 
+  <div id="modal-image1" class="modal modal-fx-3dSlit modal-image-slide">
+    <div class="modal-background"></div>
+    <div class="modal-content is-huge is-image">
+      <img src="2.cv-image.png" alt="butterfly" class="image-slide">
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+  </div>
+
   <%- include global/bundle_js %>
   <script type="text/javascript">
     $(document).ready(function(){
@@ -59,27 +67,23 @@
             $("#list-album").html('')
             for (var i = 0; i < Object.keys(response).length; i++) {
               $("#list-album").append(`
-                <div class="column is-4">
-                  <div class="card">
-                    <div class="has-text-centered">
-                      <header class="card-header">
-                        <p class="card-header-title">${response[i].album_name.substr(0, 25)}</p>
-                      </header>
-                      <div class="card-content">
-                        <div class="card-image">
-                        <figure class="image is-1by1">
-                          <img src="${response[i].path_first_photo}" alt="Placeholder image">
-                        </figure>
-                      </div>
-                      </div>
-                      <footer class="card-footer">
-                        <a href="#" class="card-footer-item"><button id="button-play-album" value="${response[i].album_name}" class="button is-success" type="button" name="button"><i class="fas fa-caret-right"></i>&nbsp Play</button></a>
-                        <a href="#" class="card-footer-item"><button id="button-edit-album" class="button is-info" type="button" name="button" disabled><i class="fas fa-edit"></i>&nbsp Edit Photo</button></a>
-                        <a href="#" class="card-footer-item"><button id="button-delete-album" value="${response[i].album_name}" class="button is-danger" type="button" name="button"><i class="fas fa-trash"></i></button></a>
-                      </footer>
-                    </div>
+              <div class="column is-4">
+                <div class="card is-shady">
+                  <header class="card-header">
+            				<p class="card-header-title">${response[i].album_name.substr(0, 25)}</p>
+            			</header>
+                  <div class="card-image">
+                    <figure class="image is-4by3">
+                      <img src="${response[i].path_first_photo}" alt="${response[i].path_first_photo}" class="modal-button">
+                    </figure>
                   </div>
+                  <footer class="card-footer">
+            				<a href="#" class="card-footer-item"><button id="button-play-album" value="${response[i].album_name}" class="button is-success" type="button" name="button"><i class="fas fa-caret-right"></i>&nbsp Play</button></a>
+            				<a href="#" class="card-footer-item"><button id="button-edit-album" class="button is-info" type="button" name="button" disabled><i class="fas fa-edit"></i>&nbsp Edit Photo</button></a>
+            				<a href="#" class="card-footer-item"><button id="button-delete-album" value="${response[i].album_name}" class="button is-danger" type="button" name="button"><i class="fas fa-trash"></i></button></a>
+            			</footer>
                 </div>
+              </div>
               `)
             }
           }
@@ -122,15 +126,43 @@
       })
 
       $(document).on("click", "#button-play-album", function () {
-        let data = $(this).val()
-        $.ajax({
-          type : 'POST',
-          url : '/play_album',
-          data : {data: data},
-          success : function (response){
-            alert(JSON.stringify(response))
+        // let data = $(this).val()
+        // $.ajax({
+        //   type : 'POST',
+        //   url : '/play_album',
+        //   data : {data: data},
+        //   success : function (response){
+        //     alert(JSON.stringify(response))
+        //   }
+        // })
+        let dd = $.ajax({type: "GET", url: "/data_album", async: false}).responseText;
+        let album_name = JSON.parse(dd).image_gallery[0].album_name
+        // return console.log(album_name);
+
+        return $.ajax({
+          type : 'GET',
+          url : `/get-all-album-data/${album_name}`,
+          // data : album_name,
+          success : function(response){
+            console.log(response);
           }
         })
+
+        $("#modal-loading").addClass("is-active");
+        setTimeout(function(){
+          $("#modal-loading").removeClass("is-active");
+          let image_source = ["1image.png","2image.png","3image.png"]
+          let image_name = ["ASAshshdbssdsds","asdsad","SDSDSDJSKDSJKDNJSKDNS"]
+          for(var i = 0;i < array.length; i++){
+            let k = i;
+            setTimeout(function(){
+              $("#modal-image1").addClass("is-active");
+              $(".image-slide").attr("src", `${image_source[k]}`);
+              $("#modal-image-slide-title").text(`${image_name[k]}`);
+              console.log('count: '+ k);
+            }, 2000 * (k + 1));
+          }
+        },1000)
       })
       // ./APPENDED EVENT
 
