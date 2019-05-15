@@ -209,7 +209,7 @@ module.exports = (app, bodyParser) => {
   })
 
   app.get('/get-all-album-data/:album_name', function(req, res) {
-    let get_data = JSON.parse(fs.readFileSync(`./views/${req.params.album_name}/${req.params.album_name}.json`, `utf8`))
+    let get_data = JSON.parse(fs.readFileSync(`./views/images-gallery/${req.params.album_name}/${req.params.album_name}.json`, `utf8`))
     return console.log(get_data);
     for (var i = 0; i < get_data_album.image_gallery.length; i++) {
       if (req.params.album_name == get_data_album.image_gallery[i].album_name) {
